@@ -1,0 +1,135 @@
+Track Kommander — Traktor bridge, manual installation
+=====================================================
+
+You should not need this file. Track Kommander installs the bridge itself:
+
+    Settings → Traktor → CONNECTION → "Install into Traktor…"
+
+That does everything below in one step, as administrator, after backing up
+and verifying Traktor's original files. Use these instructions only if that
+button fails or you would rather do it by hand.
+
+
+WHAT THE BRIDGE DOES
+--------------------
+- Sends the loaded track (title, artist, BPM, key, file path) for every deck
+  to Track Kommander whenever it changes
+- Sends on-air state (channel fader + crossfader) so the active deck can be
+  highlighted
+- Receives "load track" commands and loads the chosen track into the chosen
+  deck via Traktor's browser
+
+It is ADDITIVE. Nothing Native Instruments ships is replaced or deleted, so a
+real Traktor Kontrol D2 keeps working exactly as it did.
+
+
+WHERE TRAKTOR KEEPS ITS D2 MAPPING
+----------------------------------
+  macOS (Traktor Pro 4):
+    /Applications/Native Instruments/Traktor Pro 4/Traktor Pro 4.app/
+      Contents/Resources/qml/CSI/D2/
+
+  macOS (Traktor Pro 3):
+    /Applications/Native Instruments/Traktor Pro 3/Traktor Pro 3.app/
+      Contents/Resources/qml/CSI/D2/
+
+  Windows (Traktor Pro 4):
+    C:\Program Files\Native Instruments\Traktor Pro 4\Resources64\qml\CSI\D2\
+
+Settings → Traktor has a button that opens this folder for the installation
+it is actually using, which is safer than typing the path.
+
+
+HOW TO INSTALL BY HAND
+----------------------
+
+1. QUIT TRAKTOR. It reads this QML once at startup.
+
+2. BACK UP Traktor's own files. Zip the contents of that D2 folder to
+
+        original-files.zip
+
+   inside the folder itself, and keep a second copy somewhere outside the
+   application. That is what the Install button does, and the archive is
+   deliberately left in place: anyone can list it later and see that
+   Traktor's originals were kept. It is how you undo steps 3 and 4.
+
+3. COPY the "Api" folder from this package INTO Traktor's D2 folder, beside
+   the files already there. It adds a folder called "Api"; it overwrites
+   nothing.
+
+4. ADD TWO LINES to Traktor's own D2.qml — do not replace the file.
+
+   a. after Traktor's last "import" line, add:
+
+        import "Api"   // track-kommander:patch v1
+
+   b. immediately after the opening brace of the "Mapping" block, add:
+
+        ApiModule { name: "track_kommander_api" }   // track-kommander:patch v1
+
+   COPY THE TRAILING COMMENT TOO. It is not decoration: Track Kommander
+   finds its own lines by that marker. Without it the bridge still runs, but
+   Settings reports "Not installed" and Restore has nothing to take back out.
+
+   The result looks like this (Traktor's own contents left intact):
+
+        import CSI 1.0
+        import "../Common"
+        import "Api"   // track-kommander:patch v1
+
+        Mapping
+        {
+          ApiModule { name: "track_kommander_api" }   // track-kommander:patch v1
+
+          ... everything Traktor already had, untouched ...
+        }
+
+5. ADD A D2 CONTROLLER in Traktor — this is what makes Traktor load the
+   mapping at all, and it is needed whether or not you own the hardware:
+     Preferences → Controller Manager → Add… → Traktor → Kontrol D2
+
+6. ENABLE Traktor's Web API: Preferences → Web API.
+
+7. CHANGE THE PORT only if you changed it in Track Kommander:
+   edit API_BASE_URL near the top of Api/ApiClient.js so it matches
+   Settings → "Webhook port".
+
+8. START TRAKTOR.
+
+
+A NOTE ON macOS CODE SIGNING
+----------------------------
+Traktor's QML lives inside its signed application bundle, so writing into it
+invalidates Traktor's code signature. Traktor runs normally afterwards, but
+the change is real and worth knowing about before you make it. macOS also
+requires the App Management permission for one application to modify
+another's bundle; System Settings → Privacy & Security → App Management.
+
+
+VERIFYING
+---------
+With Traktor and Track Kommander both running, Settings → Traktor →
+CONNECTION shows the chain: the D2 mapping is installed, the D2 controller is
+added, and the bridge is responding. Loading a track in Traktor should update
+Track Kommander immediately.
+
+
+UNDOING IT
+----------
+Settings → Traktor → "Restore" puts Traktor's original files back and takes
+original-files.zip away with them — it describes a state that no longer
+exists once the originals are back.
+
+By hand: unzip original-files.zip over the folder, then delete both it and
+the "Api" folder you copied in. Or delete "Api", remove the two marked lines
+from D2.qml, and delete the zip.
+
+
+TROUBLESHOOTING
+---------------
+- Nothing arrives: check step 5. Without a Kontrol D2 in Controller Manager
+  Traktor never loads this QML, and everything else looks correct.
+- The load-to-deck feature sets Traktor's browser search to the track's
+  filename and then triggers "load selected", so it relies on that search
+  returning the right track first. Unique filenames make it reliable.
