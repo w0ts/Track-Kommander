@@ -61,6 +61,22 @@ fi
 
 cp "$HERE/dmg/Install Track Kommander.command" "$HERE/dmg/READ ME.txt" "$STAGE/"
 chmod 755 "$STAGE/Install Track Kommander.command"
+# The way in that macOS never blocks: a text file (no code, so no "Apple could not verify") with
+# the one line to paste into Terminal, spelt with this image's own volume name. Double-clicking
+# the .command from a downloaded image is refused, and Open Anyway did not get it to run
+# (User, 2026-11-26).
+cat > "$STAGE/Install - copy this line into Terminal.txt" <<EOF
+To install Track Kommander, copy the line below, paste it into Terminal, press Return:
+
+bash "/Volumes/$VOLNAME/Install Track Kommander.command"
+
+Terminal is in Applications > Utilities (or press Cmd+Space, type Terminal, press Return).
+It asks for your Mac password once (nothing shows while you type), then any question
+comes up in Terminal too: answer y or n. More in "READ ME.txt".
+
+If Terminal answers "No such file or directory": eject every other "$VOLNAME" disk
+in Finder, open the downloaded disk image again, and paste the line again.
+EOF
 # Where the app ends up, one click away (User, 2026-11-26: "i dont know where the installer put
 # the file"). The usual place; the installer also shows the app in Finder when it is done.
 ln -s "/Applications/Native Instruments/Traktor Pro 4" "$STAGE/Traktor Pro 4 folder"

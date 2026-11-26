@@ -19,22 +19,19 @@ version in Help > About). About 700 MB of disk space.
 1. Install
 ----------
 
-Double-click "Install Track Kommander.command". A Terminal window opens and the
-installer runs there.
+Open "Install - copy this line into Terminal.txt" in this disk image, copy its line,
+paste it into Terminal (Applications > Utilities > Terminal) and press Return:
 
-The first time, macOS refuses it ("Apple could not verify ..."): click Done, open
-System Settings > Privacy & Security, scroll down, click "Open Anyway" next to the
-installer's name, then double-click it again.
+    bash "/Volumes/Track Kommander/Install Track Kommander.command"
+
+The installer runs in that Terminal window. (Double-clicking "Install Track Kommander.command"
+works only after System Settings > Privacy & Security > "Open Anyway", and not on every Mac:
+macOS refuses unsigned installers downloaded from the internet.)
 
 It asks for your Mac password once, at the start, in Terminal (Traktor's folder is
 protected; nothing shows while you type it). If Traktor is running, it waits for you
 to quit it. Any question comes up in Terminal too: answer y or n. An old copy goes to
 the Bin, it is never deleted.
-
-Without the Privacy & Security step: open Terminal (Applications > Utilities >
-Terminal), paste this line and press Return:
-
-    bash "/Volumes/Track Kommander/Install Track Kommander.command"
 
 
 2. What the installer does

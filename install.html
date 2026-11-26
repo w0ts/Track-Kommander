@@ -59,11 +59,15 @@ each Traktor update needs a Track Kommander release made for it.</p>
 open it.</p>
 </li>
 <li>
-<p><strong>Double-click <em>Install Track Kommander.command</em></strong> in the disk image. A
-Terminal window opens and the installer runs there.</p>
-<p>The first time, macOS refuses it (&quot;Apple could not verify…&quot;): click
-<strong>Done</strong>, open <strong>System Settings → Privacy &amp; Security</strong>, scroll down, click
-<strong>Open Anyway</strong> next to the installer's name, then double-click it again.</p>
+<p><strong>Copy the install line into Terminal.</strong> Open <em>Install - copy this line into
+Terminal.txt</em> in the disk image, copy its line, paste it into Terminal
+(Applications → Utilities → Terminal) and press Return:</p>
+<pre><code>bash &quot;/Volumes/Track Kommander/Install Track Kommander.command&quot;
+</code></pre>
+<p>The installer runs in that Terminal window. Double-clicking <em>Install Track
+Kommander.command</em> instead works only after <strong>System Settings → Privacy &amp;
+Security → Open Anyway</strong>, and not on every Mac: macOS refuses unsigned
+installers downloaded from the internet.</p>
 </li>
 <li>
 <p><strong>Type your Mac password</strong> when Terminal asks (nothing shows while you type:
@@ -83,9 +87,6 @@ links, not copied. It is signed &quot;ad hoc&quot; for your Mac, because a chang
 cannot keep Native Instruments' signature. Your Traktor Pro 4 is not touched,
 and the disk image holds no Native Instruments file. A log is kept in
 <code>~/Library/Logs/Track Kommander/install.log</code>.</p>
-<p>Without the Privacy &amp; Security step: open Terminal (Applications → Utilities),
-paste <code>bash &quot;/Volumes/Track Kommander/Install Track Kommander.command&quot;</code> and
-press Return.</p>
 <p><strong>Remove it:</strong> drag <em>Traktor Pro 4 TK</em> to the Bin. To remove everything,
 delete <code>~/Library/Application Support/Track Kommander</code> and
 <code>~/Library/Caches/Track Kommander</code> too.</p>
