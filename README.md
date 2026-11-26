@@ -1,7 +1,6 @@
 <!--
-  This file is the public repo's README (github.com/w0ts/Track-Kommander), exported as README.md
-  by scripts/export_public.py. Developers and licences only: the user text is SITE.md, rendered
-  as the site.
+  The README of github.com/w0ts/Track-Kommander. Developers and licences only: the user text is
+  site/SITE.md, rendered as the site (make site).
 -->
 # Track Kommander
 

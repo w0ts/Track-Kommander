@@ -1,11 +1,9 @@
-"""Build the public site's pages from SITE.md.
+"""Build the public site's pages from site/SITE.md.
 
     python scripts/public_site.py <tree-root>
 
-scripts/publish_public.sh assembles the public repo in <tree-root>, with
-SITE.md beside the public README (dead links already unlinked by
-public_links.py). This step renders that SITE.md into <tree-root>/index.html and
-its sibling pages, which GitHub Pages serves at
+`make site` copies site/SITE.md to <tree-root> (this repo's root) and runs this. It
+renders that SITE.md into <tree-root>/index.html and its sibling pages, which GitHub Pages serves at
 https://w0ts.github.io/Track-Kommander/, then removes SITE.md from the tree: the
 public repo's README is for developers, the user text is only on the site.
 SITE.md stays the one source: the pages are never edited by hand.
@@ -41,7 +39,7 @@ SITES_ROOT = "https://w0ts.github.io/"
 STYLE_URL = "https://w0ts.github.io/site-style/common.css"
 # the w0ts project switcher after the title
 SWITCHER_URL = "https://w0ts.github.io/site-style/switcher.js"
-SOURCE = "SITE.md"  # the user text; rendered into the pages, then left out of the public tree
+SOURCE = "SITE.md"  # in the public tree (copied there from site/SITE.md): the user text; rendered into the pages, then left out of the public tree
 
 _COMMENT = re.compile(r"<!--.*?-->\s*", re.DOTALL)
 _SCHEME = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")

@@ -30,7 +30,7 @@ VENV           := .venv
 DIST           := dist
 
 .DEFAULT_GOAL := help
-.PHONY: help venv lock libtk release run lockcheck lint typecheck suppressions test check models build package dmg deploy deploy-reset-perms clean distclean
+.PHONY: help venv lock libtk release site run lockcheck lint typecheck suppressions test check models clean distclean
 
 # CLAP ONNX artefacts (gitignored, ~110 MB) — produced once by
 # scripts/export_clap_onnx.py. `make models` generates them if missing; build
@@ -119,7 +119,7 @@ $(VENV_PY): pyproject.toml
 # ── Run / build ──────────────────────────────────────────────────────────────
 # libtk.dylib, the library the embedded version injects into Traktor: pinned
 # frida-gum devkit downloaded + sha256-checked, built, ad-hoc signed, checked.
-# The same path the release workflow (build-libtk.yml) runs. Never the
+# The same path the release workflow (release.yml) runs. Never the
 # Developer ID: scripts/build_libtk.sh drops what .env.local put here.
 libtk: ## build traktor-native/build/libtk.dylib (+ .sha256), ad-hoc signed
 	scripts/build_libtk.sh
@@ -129,6 +129,12 @@ libtk: ## build traktor-native/build/libtk.dylib (+ .sha256), ad-hoc signed
 RELEASE_DMG ?= $(DIST)/Track Kommander.dmg
 release: libtk ## the release disk image → dist/Track Kommander.dmg
 	bash traktor-native/re/make_release_dmg.sh "$(RELEASE_DMG)"
+
+# The site GitHub Pages serves from this repo's root: index.html and its sibling pages, rendered
+# from site/SITE.md (the one source; the pages are never edited by hand). Commit them after.
+site: $(VENV_PY) ## render site/SITE.md into index.html and the other pages
+	cp site/SITE.md SITE.md
+	$(VENV_PY) scripts/public_site.py .
 
 run: $(VENV_PY) ## run the app from source
 	$(VENV_PY) $(ENTRY)

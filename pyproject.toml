@@ -91,7 +91,7 @@ dev = [
     "ruff>=0.5",
     "pytest>=8.0",
     "pyright>=1.1.380",
-    # scripts/public_site.py: SITE.md -> the public site's pages
+    # scripts/public_site.py: site/SITE.md -> the public site's pages
     "markdown-it-py>=4.0",
 ]
 

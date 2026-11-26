@@ -1,4 +1,4 @@
-"""scripts/check_libtk.py, the check the libtk release build runs (build-libtk.yml).
+"""scripts/check_libtk.py, the check the release build runs (release.yml).
 
 The build itself needs a Mac; what it checks against is plain source, so it is tested here
 on every commit: the export list it expects, the Python side calling only what libtk

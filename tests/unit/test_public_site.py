@@ -1,4 +1,4 @@
-"""scripts/public_site.py — SITE.md rendered as the public site.
+"""scripts/public_site.py — site/SITE.md rendered as the public site.
 
 The pages at https://w0ts.github.io/Track-Kommander/ (About, Install, Matching,
 Export) are generated from the public README on every release, so the README
@@ -150,7 +150,7 @@ def _page(name: str, text: str = README) -> str:
 
 
 def test_real_public_readme_fills_every_page() -> None:
-    text = (REPO / "SITE.md").read_text(encoding="utf-8")
+    text = (REPO / "site" / "SITE.md").read_text(encoding="utf-8")
     expected = {
         "index.html": ("what-it-does", "contributing", "licence-and-attribution"),
         "install.html": ("install", "first-run", "troubleshooting"),
@@ -222,7 +222,7 @@ def test_install_shows_one_tab_per_system_the_first_open() -> None:
     """User, 2026-11-26: "one page with two tabs" (macOS, Windows); no script needed."""
     from public_site import PAGES, build_page
 
-    page = build_page((REPO / "SITE.md").read_text("utf-8"), PAGES[1])
+    page = build_page((REPO / "site" / "SITE.md").read_text("utf-8"), PAGES[1])
     assert '<input type="radio" name="install-tab" id="install-macos" checked>' in page
     assert '<input type="radio" name="install-tab" id="install-windows">' in page
     assert page.count('class="card tab-panel"') == 2

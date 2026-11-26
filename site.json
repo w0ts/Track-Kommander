@@ -1,0 +1,8 @@
+{
+  "site": {"name": "Track Kommander", "prefix": "Track-Kommander", "repo": "https://github.com/w0ts/Track-Kommander"},
+  "build": [
+    {"run": "cp site/SITE.md \"$WORK/\" && uv run --no-project --with markdown-it-py python3 scripts/public_site.py \"$WORK\" && cp \"$WORK\"/*.html \"$OUT/\"",
+     "why": "the pages from site/SITE.md, as make site renders them into this repo's root"},
+    {"copy": "docs/screenshot.png", "to": "docs/"}
+  ]
+}

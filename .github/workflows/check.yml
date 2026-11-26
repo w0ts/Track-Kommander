@@ -8,8 +8,8 @@ name: Check
 # so those stay on the self-hosted machines, and the developer's Mac is not
 # used for the checks.
 #
-# The installers are built by build-macos.yml / build-windows.yml on a
-# version tag; they run `make check` again before building.
+# The installers are built by release.yml on a version tag; it runs
+# `make check` again before building.
 
 on:
   push:

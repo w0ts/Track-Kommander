@@ -45,11 +45,11 @@ def test_a_weak_correlation_reads_as_independent() -> None:
 
 
 def test_the_public_readme_documents_every_dimension() -> None:
-    """SITE.md is the website (public_site.py renders it); a new axis must not
+    """site/SITE.md is the website (public_site.py renders it); a new axis must not
     ship unexplained there. README.md and README.public.md are developer-only
     and link to the site instead."""
     # Named, not left to the platform: the file is UTF-8, and Windows would
     # otherwise read it as CP1252 and stop at the first byte that is not.
     root = Path(__file__).resolve().parents[2]
-    readme = (root / "SITE.md").read_text(encoding="utf-8")
+    readme = (root / "site" / "SITE.md").read_text(encoding="utf-8")
     assert [s.label for s in FEATURES if f"**{s.label}**" not in readme] == []

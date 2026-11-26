@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build libtk.dylib, the library TK's embedded version injects into Traktor,
 # from a clean checkout: `make libtk` locally, and the release workflow
-# (.github/workflows/build-libtk.yml) runs the same target.
+# (.github/workflows/release.yml) runs the same target.
 #
 #   1. downloads the pinned frida-gum devkit (macOS arm64) from frida's
 #      GitHub releases and checks its sha256;

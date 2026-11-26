@@ -1,0 +1,137 @@
+name: Release
+
+# The Track Kommander installers, built here and published on this repo.
+#   - push an annotated tag like v0.1.0 → build both, create the release (notes = the tag's
+#     message) and attach "Track Kommander.dmg" and "TrackKommanderSetup.msi" (+ .sha256)
+#   - or run it by hand from the Actions tab → build only, a short-lived artifact
+#
+# On the w0ts organisation's self-hosted runners (macOS: the Mac, Windows: WOTS). A job queues
+# while its machine is off. Tag and manual runs only: nothing a pull request sends ever runs on
+# them (check.yml, the per-commit gate, runs on hosted Ubuntu).
+#
+# Ad hoc signed throughout, no Developer ID (the User's ruling, 2026-11-25): no secrets here.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  macos:
+    runs-on: ["self-hosted", "macOS"]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+
+      # The CLAP artefacts the kit carries: ~600 MB download + a torch export, deterministic
+      # for a given export script and label set.
+      - name: Cache CLAP model
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: clap_model
+          key: clap-model-${{ hashFiles('scripts/export_clap_onnx.py', 'src/core/clap_genre_labels.json') }}
+
+      - name: Sync deps
+        run: make venv
+
+      # No installer is published over a failing gate.
+      - name: Run every check
+        run: make check
+
+      - name: Models
+        run: make models
+
+      - name: Build the disk image (make release)
+        run: |
+          set -euo pipefail
+          make release
+          cd dist && shasum -a 256 "Track Kommander.dmg" > "Track Kommander.dmg.sha256"
+
+      # Whichever job gets here first creates the release; the other finds it and only uploads.
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          command -v gh >/dev/null || PATH="$PATH:/opt/homebrew/bin"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "Track Kommander ${TAG#v}" --notes-from-tag \
+              || gh release view "$TAG" >/dev/null   # lost the race: fine
+          fi
+          gh release upload "$TAG" "dist/Track Kommander.dmg" "dist/Track Kommander.dmg.sha256" --clobber
+
+      - name: Upload build artifact
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        continue-on-error: true
+        with:
+          name: macos-dmg
+          path: dist/Track Kommander.dmg*
+          if-no-files-found: error
+          retention-days: 1
+
+  windows:
+    runs-on: ["self-hosted", "Windows"]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+
+      - name: Cache CLAP model
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: clap_model
+          key: clap-onnx-${{ hashFiles('scripts/export_clap_onnx.py', 'src/core/clap_genre_labels.json') }}
+
+      - name: Run every check
+        shell: pwsh
+        run: ./make.ps1 check
+
+      - name: Models
+        shell: pwsh
+        run: ./make.ps1 models
+
+      - name: Build the installer
+        shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File traktor-native/win/make_release_msi.ps1 -Out dist/TrackKommanderSetup.msi
+
+      # Everything reaches the script through the environment, never pasted into its text.
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view $env:TAG *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:TAG --title "Track Kommander $($env:TAG.TrimStart('v'))" --notes-from-tag
+            if ($LASTEXITCODE -ne 0) { gh release view $env:TAG *> $null }  # lost the race: fine
+          }
+          gh release upload $env:TAG dist/TrackKommanderSetup.msi dist/TrackKommanderSetup.msi.sha256 --clobber
+          if ($LASTEXITCODE -ne 0) { throw "upload to the release failed" }
+
+      - name: Upload build artifact
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        continue-on-error: true
+        with:
+          name: windows-msi
+          path: dist/TrackKommanderSetup.msi*
+          if-no-files-found: error
+          retention-days: 1
