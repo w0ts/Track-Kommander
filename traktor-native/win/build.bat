@@ -1,10 +1,12 @@
 @echo off
 rem Build libtk.dll + tk_launch.exe (Windows x64, MSVC, static CRT).
-rem Needs the frida-gum devkit (windows-x86_64, 17.27.5) in vendor\frida-gum\ (frida-gum.h + .lib).
+rem Needs the frida-gum devkit (windows-x86_64, 17.27.5) in vendor\frida-gum\ (frida-gum.h + .lib):
+rem fetch_frida.ps1 downloads it (sha256-checked) when it is missing.
 rem Output: build\libtk.dll, build\tk_launch.exe
 setlocal
 set HERE=%~dp0
 set GUM=%HERE%vendor\frida-gum
+powershell -NoProfile -ExecutionPolicy Bypass -File "%HERE%fetch_frida.ps1" || exit /b 1
 if not exist "%GUM%\frida-gum.lib" (
   echo need %GUM%\frida-gum.lib ^(frida-gum-devkit-17.27.5-windows-x86_64^)
   exit /b 1
