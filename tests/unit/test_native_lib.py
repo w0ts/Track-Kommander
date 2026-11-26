@@ -35,7 +35,9 @@ def test_inside_traktor_a_symbol_is_looked_up(monkeypatch):
     class FakeLib:
         tk_load_path = object()
 
-    monkeypatch.setattr(ctypes, "CDLL", lambda *_a: FakeLib())
+    # macOS opens CDLL(None); Windows opens libtk.dll by its loaded module's handle.
+    monkeypatch.setattr(native_lib, "_loaded_module_handle", lambda _name: 1)
+    monkeypatch.setattr(ctypes, "CDLL", lambda *_a, **_k: FakeLib())
     assert native_lib.process_symbol("tk_load_path") is FakeLib.tk_load_path
     assert native_lib.process_symbol("tk_missing") is None
 

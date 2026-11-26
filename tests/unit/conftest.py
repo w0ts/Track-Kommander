@@ -18,6 +18,13 @@ import os
 import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+# On Windows the offscreen platform looks for fonts only in PySide6's own lib/fonts, which is
+# empty (Qt ships none): every glyph then draws faint. TK inside Traktor uses the real platform
+# and the system's fonts; the tests get those too (measured on WOTS, 2026-11-26).
+if os.name == "nt":
+    os.environ.setdefault(
+        "QT_QPA_FONTDIR", os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
+    )
 
 
 @pytest.fixture(autouse=True)

@@ -285,24 +285,30 @@ def _discogs_answer(path: str, status: str) -> None:
 def test_a_run_with_spotify_takes_tracks_discogs_settled_but_spotify_owes(fresh_db) -> None:
     from core import discogs_store
 
-    for p in ("/m/none.mp3", "/m/review.mp3", "/m/matched.mp3", "/m/missed.mp3"):
+    # Spelt as the database holds paths (the NML reader's normpath: backslashes on Windows).
+    for p in (
+        normpath("/m/none.mp3"),
+        normpath("/m/review.mp3"),
+        normpath("/m/matched.mp3"),
+        normpath("/m/missed.mp3"),
+    ):
         with db.get_conn() as c:
             c.execute(
                 "INSERT INTO tracks (path, filename, artist, title, album, duration) VALUES (?, 'f', 'A', ?, '', 200)",
                 (p, p),
             )
             c.commit()
-    _discogs_answer("/m/none.mp3", "none")
-    _discogs_answer("/m/review.mp3", "review")
-    _discogs_answer("/m/matched.mp3", "matched")
-    _discogs_answer("/m/missed.mp3", "none")
-    spotify_store.note_tried("/m/missed.mp3", "no_match")  # Spotify gave up on it
+    _discogs_answer(normpath("/m/none.mp3"), "none")
+    _discogs_answer(normpath("/m/review.mp3"), "review")
+    _discogs_answer(normpath("/m/matched.mp3"), "matched")
+    _discogs_answer(normpath("/m/missed.mp3"), "none")
+    spotify_store.note_tried(normpath("/m/missed.mp3"), "no_match")  # Spotify gave up on it
 
     assert discogs_store.spotify_owed() == {normpath("/m/none.mp3"), normpath("/m/review.mp3")}
     without = {p for p, _q in discogs_store.pending()}
     with_spotify = {p for p, _q in discogs_store.pending(spotify=True)}
     assert without == set()
-    assert with_spotify == {"/m/none.mp3", "/m/review.mp3"}
+    assert with_spotify == {normpath("/m/none.mp3"), normpath("/m/review.mp3")}
 
 
 # ── Discogs first, Spotify after; the review gathers both ────────────────────
@@ -343,7 +349,8 @@ def test_a_rejected_guess_leaves_the_review_and_is_not_asked_again(fresh_db) -> 
 def test_the_review_holds_doubtful_discogs_tracks_and_spotifys_unsure_guesses(fresh_db) -> None:
     from core import discogs_store
 
-    for p in ("/m/d.mp3", "/m/s.mp3", "/m/m.mp3"):
+    # Spelt as the database holds paths (the NML reader's normpath: backslashes on Windows).
+    for p in (normpath("/m/d.mp3"), normpath("/m/s.mp3"), normpath("/m/m.mp3")):
         with db.get_conn() as c:
             c.execute(
                 "INSERT INTO tracks (path, filename, artist, title, album, duration) "
@@ -351,11 +358,11 @@ def test_the_review_holds_doubtful_discogs_tracks_and_spotifys_unsure_guesses(fr
                 (p, p),
             )
             c.commit()
-    discogs_store.save(discogs_store.Lookup(path="/m/d.mp3", status="review"))
-    discogs_store.save(discogs_store.Lookup(path="/m/m.mp3", status="matched"))
-    spotify_store.save_search("/m/s.mp3", _unsure())
-    spotify_store.save_search("/m/m.mp3", _unsure())  # Discogs has it: not in the review
-    assert discogs_store.review_paths() == {"/m/d.mp3", normpath("/m/s.mp3")}
+    discogs_store.save(discogs_store.Lookup(path=normpath("/m/d.mp3"), status="review"))
+    discogs_store.save(discogs_store.Lookup(path=normpath("/m/m.mp3"), status="matched"))
+    spotify_store.save_search(normpath("/m/s.mp3"), _unsure())
+    spotify_store.save_search(normpath("/m/m.mp3"), _unsure())  # Discogs has it: not in the review
+    assert discogs_store.review_paths() == {normpath("/m/d.mp3"), normpath("/m/s.mp3")}
 
 
 def test_spotify_is_asked_after_discogs_and_settles_a_review(fresh_db, monkeypatch) -> None:

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import os
 import threading
 import unicodedata
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -282,4 +284,7 @@ def test_the_nml_and_memory_give_the_same_tracks(tmp_path) -> None:
 
     nml = tmp_path / "collection.nml"
     nml.write_text(NML_CUES, encoding="utf-8")
-    assert nml_cues(nml) == parse_native_cues(CUE_DUMP)[:2]
+    # CUE_DUMP is a macOS dump ("/m/grid.mp3"); the NML reader spells its paths the system's way
+    # (os.path.normpath: backslashes on Windows), and so does libtk.dll's dump there.
+    native = [replace(t, path=os.path.normpath(t.path)) for t in parse_native_cues(CUE_DUMP)[:2]]
+    assert nml_cues(nml) == native

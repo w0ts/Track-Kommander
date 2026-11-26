@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from core import rekordbox as rb
 from core.collection_source import parse_native_dump
 from core.cue_points import Cue, TrackCues
 from core.native_export import entries, entry, export_collection
 
 PATH = "/Users/me/Music/Tracks/2025-10/Artist - Song.mp3"
+#: The key entries() gives it: spelt as the NML reader spells paths (backslashes on Windows).
+KEY = str(Path(PATH))
 # key path title artist album genre label comment comment2 bpm key rating plays import release
 # bitrate playtime (libtk's collection dump, 17 columns)
 DUMP = "\t".join(
@@ -80,8 +84,8 @@ def test_the_generated_entry_reads_back_as_the_same_track() -> None:
 def test_entries_are_keyed_by_path_like_the_nml_reader() -> None:
     _paths, meta = parse_native_dump(DUMP)
     got = entries(meta, CUES)
-    assert list(got) == [PATH]
-    assert got[PATH].get("TITLE") == "Song"
+    assert list(got) == [KEY]
+    assert got[KEY].get("TITLE") == "Song"
 
 
 def test_inside_traktor_the_sticks_playlists_never_read_the_nml(monkeypatch, tmp_path) -> None:
@@ -93,7 +97,7 @@ def test_inside_traktor_the_sticks_playlists_never_read_the_nml(monkeypatch, tmp
     monkeypatch.setattr(cs, "_native_cues", lambda: CUES)
     nml = tmp_path / "collection.nml"  # does not exist: it would be an error to look
     got, version = traktor_playlists.entries_by_path(nml)
-    assert list(got) == [PATH] and version
+    assert list(got) == [KEY] and version
 
 
 def test_an_older_libtk_without_the_duration_column_still_reads() -> None:
