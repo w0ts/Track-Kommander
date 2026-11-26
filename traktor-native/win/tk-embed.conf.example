@@ -1,0 +1,14 @@
+# tk-embed.conf — next to tk_launch.exe. KEY=VALUE, TK_* only; variables already set win.
+# For development only: the release finds TK's kit beside the launcher (<install>\tk) by itself.
+# Copy to tk-embed.conf and adjust the paths to your checkout and your Python 3.13.
+TK_REPO=C:\Users\you\TrackKommander
+TK_PYTHONHOME=C:\Users\you\AppData\Local\Python\pythoncore-3.13-64
+TK_PYTHON_DLL=python313.dll
+TK_EMBED=C:\Users\you\TrackKommander\traktor-native\win\embed_tk_win.py
+# A test copy: its own data folder ("Track Kommander Beta") and bridge port, never the
+# installed TK's library. TK_SHOW_PORT must be that port (libtk posts there).
+TK_PROFILE=beta
+TK_SHOW_PORT=12346
+# TK_DYLIB_LOG=%LOCALAPPDATA%\Track Kommander\logs\libtk.log   (the default)
+# TK_CMD_PORT=8767
+# TK_TRAKTOR_EXE=C:\Program Files\Native Instruments\Traktor Pro 4\Traktor Pro 4.exe

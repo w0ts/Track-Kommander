@@ -1,0 +1,90 @@
+Track Kommander inside Traktor
+==============================
+
+This disk image makes "Traktor Pro 4 TK": your own Traktor Pro 4, started with Track
+Kommander inside it. It is made on your Mac, from your Traktor, and sits BESIDE your
+normal Traktor Pro 4, which is not changed: use either one.
+
+  Install Track Kommander.command   makes it and puts it in place (below)
+  Traktor Pro 4 folder              a shortcut to where it goes: beside your Traktor Pro 4,
+                                    in /Applications/Native Instruments/Traktor Pro 4
+  Track Kommander Files             what the installer uses (Track Kommander itself,
+                                    with its own Python: nothing else to install)
+
+Needs: an Apple Silicon Mac (M1 or later) and a Traktor Pro 4 version Track Kommander
+supports (the installer says which, and stops if yours is another; Traktor shows its
+version in Help > About). About 700 MB of disk space.
+
+
+1. Install
+----------
+
+Double-click "Install Track Kommander.command". A Terminal window opens and the
+installer runs there.
+
+The first time, macOS refuses it ("Apple could not verify ..."): click Done, open
+System Settings > Privacy & Security, scroll down, click "Open Anyway" next to the
+installer's name, then double-click it again.
+
+It asks for your Mac password once, at the start, in Terminal (Traktor's folder is
+protected; nothing shows while you type it). If Traktor is running, it waits for you
+to quit it. Any question comes up in Terminal too: answer y or n. An old copy goes to
+the Bin, it is never deleted.
+
+Without the Privacy & Security step: open Terminal (Applications > Utilities >
+Terminal), paste this line and press Return:
+
+    bash "/Volumes/Track Kommander/Install Track Kommander.command"
+
+
+2. What the installer does
+--------------------------
+
+It finds your Traktor Pro 4 (with Spotlight) and checks it is a supported version.
+Then it makes "Traktor Pro 4 TK.app" next to it, in the same folder (usually
+/Applications/Native Instruments/Traktor Pro 4/):
+
+  - Traktor's executable, its Apple Silicon part, told to load Track Kommander,
+  - Track Kommander and its own Python, inside the app,
+  - your Traktor's own Frameworks, PlugIns and Resources, through links (not copied).
+
+The app is signed "ad hoc" for your Mac. A changed Traktor cannot keep Native
+Instruments' signature, and Track Kommander has no Apple developer signature of its
+own. The installer removes the download's quarantine mark from the app's own files, so
+macOS opens it without "Move to Bin".
+
+
+3. Start it
+-----------
+
+The installer opens it the first time. Then open "Traktor Pro 4 TK" (next to Traktor
+Pro 4); if your normal Traktor is running, quit it first. Track Kommander appears
+inside Traktor (its band and its entry in the browser tree) after a few seconds. The
+first start takes longer, and the first analysis of your collection takes a while.
+
+macOS may ask whether "Traktor Pro 4" may use your Music folder, your microphone or
+your controllers: allow, as you did for your normal Traktor (macOS sees the TK copy as
+a different app, so it asks again).
+
+When Native Instruments updates Traktor, "Traktor Pro 4 TK" stops matching it: install
+the Track Kommander release made for the new Traktor version.
+
+
+4. If something does not work
+-----------------------------
+
+Send these files:
+
+    /tmp/tk_dylib.log                                      (Track Kommander's loader)
+    ~/Library/Logs/Track Kommander/embed.log               (its start inside Traktor)
+    ~/Library/Application Support/Track Kommander/logs/    (Track Kommander's own log)
+
+
+5. Remove it
+------------
+
+Drag "Traktor Pro 4 TK.app" (next to your Traktor Pro 4) to the Bin. Your normal
+Traktor Pro 4 and its collection are as before. Track Kommander's own data (its
+database of your tracks) is in ~/Library/Application Support/Track Kommander, and its
+caches in ~/Library/Caches/Track Kommander: delete those folders too to remove
+everything.

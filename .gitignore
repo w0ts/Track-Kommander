@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+.idea/
+
+# Virtual environments
+venv/
+.venv/
+
+# Database — binary, large, machine-specific (regenerate with analyze.py)
+/traktor_kommander.db
+/traktor_kommander.db-shm
+/traktor_kommander.db-wal
+
+# Logs
+analysis.log
+log.log
+
+# Downloaded ML models (large binaries — re-downloaded on first run)
+models/
+clap_model/
+
+# Traktor now-playing file (written to /tmp at runtime)
+/tmp/traktor_nowplaying.txt
+
+# macOS
+.DS_Store
+
+# Claude Code session files
+.claude/9d7o09t3k09c3oesc574
+/build/
+/dist/
+*.egg-info/
+Traktor Kommander.spec
+/dist-nuitka/Traktor Kommander.app/Contents/traktor_kommander.db
+/dist-nuitka/
+/dist.lock/pid
+.uv-bootstrap/
+
+# Project-local env (signing creds, app-specific passwords, …) — never commit
+.env.local
+/developerID_application.cer
+/.claude/scheduled_tasks.lock
+
+# Stray USB-export output — a device export run with the repo as its
+# destination drops the stick layout (audio, analysis, rekordbox.xml) here.
+# It is other people's music; it must never be committed or published.
+/src/PIONEER/
+/src/Contents/
+/src/rekordbox.xml
+
+# Traktor native-tab RE: worktrees + heavy/binary data (never commit, never public)
+/worktrees/
+/traktor-native/data/
+*.app/
+/traktor-native/vendor/
+/traktor-native/build/
+
+# ONNX embedding models (MERT/PANNs/OpenL3/Discogs): large, provisioned separately, never committed
+embed_models/
+/traktor-native/win/build/
+/traktor-native/win/vendor/
+/traktor-native/win/tk-embed.conf

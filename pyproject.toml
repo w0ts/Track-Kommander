@@ -1,0 +1,144 @@
+[project]
+name            = "track-kommander"
+version         = "0.1.0"
+description     = "DJ track-matching companion for Traktor Pro 3/4."
+license         = "GPL-3.0-only"
+readme          = "README.md"
+# Pinned to 3.13 because Nuitka 4.0.x's support for 3.14 is still
+# experimental (it generates broken code for f-strings in some
+# site-packages). Bump to 3.14 once Nuitka catches up.
+requires-python = ">=3.13,<3.14"
+
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.11.0",
+    "PySide6>=6.6.0",
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    # PyAV comes from vendor/wheels/ on macOS and Windows (see [tool.uv.sources]):
+    # the PyPI wheels link GPL x264/x265 into FFmpeg. Rebuild with
+    # scripts/build_ffmpeg_lgpl.sh when bumping this pin.
+    "av==17.0.1",
+    # Reads/writes the rekordbox export.pdb DeviceSQL database for the USB
+    # export (core/device_export.py). MIT, pure stdlib, ~40 kB of code — but
+    # it is not published on PyPI, so it is pinned to an exact commit of the
+    # upstream repository. Vendoring it under src/ would work too (the licence
+    # allows it); the pin is preferred so upstream fixes stay a one-line bump
+    # instead of a merge. If the upstream repo ever disappears, vendor it —
+    # the frozen build cannot ship without it.
+    "rekordbox-pdb @ git+https://github.com/fragmede/rekordbox-pdb@ee3bac2f22ca11a5ce61eea35f8cb951c246eaef",
+    # SQLCipher bindings for the OneLibrary database (core/onelibrary.py) —
+    # the exportLibrary.db the CDJ-3000X, XDJ-AZ, OPUS-QUAD and OMNIS-DUO
+    # require. zlib licence; the wheel statically bundles SQLCipher (BSD-3)
+    # and OpenSSL (Apache-2.0) — see THIRD_PARTY.md.
+    "sqlcipher3-wheels>=0.5.7",
+    # ONNX Runtime replaces torch + transformers at runtime. The CLAP audio
+    # encoder ships as a pre-exported ONNX file (~110 MB) and text prompt
+    # embeddings as a pre-computed .npz (see scripts/export_clap_onnx.py).
+    # Windows uses the DirectML build for GPU acceleration on any DX12 adapter
+    # (NVIDIA/AMD/Intel); it exposes the same ``onnxruntime`` import, so
+    # core/clap_analysis.py just picks DmlExecutionProvider at session creation
+    # (set TK_CLAP_DML=0 to force CPU). Other platforms use the CPU build.
+    "onnxruntime>=1.20.0;          sys_platform != 'win32'",
+    "onnxruntime-directml>=1.20.0; sys_platform == 'win32'",
+    # Windows-only: the S4 MK2 HID backend. macOS drives the controller
+    # through IOKit's IOHIDManager via ctypes (no package needed); Windows
+    # has no equivalent, so hidapi supplies the read loop — see
+    # workers/s4mk2_watcher.py. Absent, the watcher logs and idles.
+    "hidapi>=0.14.0; sys_platform == 'win32'",
+    # macOS-only: drag-and-drop, screenshot capture, browser-search
+    # injection — see core/drag.py and workers/webhook.py.
+    "pyobjc-framework-Cocoa>=10.0;  sys_platform == 'darwin'",
+    "pyobjc-framework-Quartz>=10.0; sys_platform == 'darwin'",
+]
+
+[project.optional-dependencies]
+# Tools needed to ship a built .app or to (re-)export the CLAP model —
+# not required at runtime. Activate with: uv sync --extra build
+build = [
+    "nuitka>=4.0",
+    "ordered-set",
+    "zstandard",
+    # Nuitka 4.x dropped its inline copy of markupsafe; the build
+    # aborts with "FATAL: Error, expected inline copy of 'markupsafe'"
+    # without it.
+    "markupsafe>=2.1",
+    # Styled .dmg (app + /Applications symlink + background) — see
+    # scripts/dmg_settings.py.
+    "dmgbuild>=1.6; sys_platform == 'darwin'",
+    # Required by scripts/export_clap_onnx.py (one-time CLAP→ONNX export).
+    # NOT shipped to end users — they get the pre-exported .onnx artefact.
+    "torch>=2.2.0",
+    "transformers>=4.40.0",
+    "huggingface_hub>=0.22.0",
+    "onnx>=1.16.0",
+    "onnxscript>=0.1.0",
+    # Torch-based similarity-embedding exports (scripts/export_<model>_onnx.py).
+    # Dev-only — end users get the pre-exported .onnx artefacts in embed_models/.
+    #   MERT  → transformers (above); nnAudio only if the remote code needs it.
+    #   PANNs → panns-inference (+ the Cnn14_mAP=0.431.pth checkpoint).
+    #   Discogs→ official ONNX downloaded by the script; needs only onnx (above).
+    "panns-inference>=0.1.0",
+]
+# OpenL3 is deliberately NOT declared here. It is TensorFlow-based and does not
+# install on this project's Python 3.13 (openl3 0.4.2 imports the removed `imp`
+# module; TF wheels lag 3.13). uv resolves *all* extras when locking, so even
+# listing it in a separate extra breaks `uv sync`. Export it from a throwaway
+# Python 3.10/3.11 env instead (see docs/embeddings.md), then drop the .onnx
+# into embed_models/.
+# Dev-only — linting, formatting, testing.
+dev = [
+    "ruff>=0.5",
+    "pytest>=8.0",
+    "pyright>=1.1.380",
+    # scripts/public_site.py: SITE.md -> the public site's pages
+    "markdown-it-py>=4.0",
+]
+
+[build-system]
+requires      = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.uv.sources]
+# Audio-only, LGPL-2.1-or-later FFmpeg builds — the shipped app must carry no
+# GPL code. Built by scripts/build_ffmpeg_lgpl.sh (macOS) / .bat (Windows, on
+# a Windows PC); see THIRD_PARTY.md. Other platforms fall back to PyPI.
+av = [
+    { path = "vendor/wheels/av-17.0.1-cp311-abi3-macosx_12_0_arm64.whl", marker = "sys_platform == 'darwin'" },
+    { path = "vendor/wheels/av-17.0.1-cp311-abi3-win_amd64.whl", marker = "sys_platform == 'win32'" },
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pyright]
+# Type-check gate on the platform-independent core only (make typecheck).
+include = ["src/core"]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
+extraPaths = ["src"]
+# A "# type: ignore" would hide a finding from the gate; none is honoured.
+enableTypeIgnoreComments = false
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tools"]
+testpaths  = ["tests/unit"]
+# A misspelt marker is an error, not a test that silently stops being selected.
+addopts    = "--strict-markers"
+markers    = [
+    "slow: starts a subprocess or does real work; deselect with -m 'not slow'",
+]
+
+[tool.ruff]
+line-length    = 100
+target-version = "py313"
+extend-exclude = ["venv", ".venv", "build", "dist", "dist-nuitka"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]   # line length governed by formatter

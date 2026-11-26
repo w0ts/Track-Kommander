@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Track Kommander for Windows — WiX Toolset v7. Built by ..\make_release_msi.ps1.
+
+  Installs, into C:\Program Files\Track Kommander\ (one folder, the "stage"):
+    tk_launch.exe    starts the installed Traktor Pro 4 with Track Kommander inside (it checks
+                     Traktor's build first; Traktor's files are never changed)
+    libtk.dll        Track Kommander's library inside Traktor
+    tk\              the kit: Python, TK's packages and source (make_kit.ps1)
+    tk-addon\        only in an edition with an add-on
+  and one shortcut, "Traktor with Track Kommander" (Start menu and desktop). Per-user data
+  (database, logs, caches) lives under %LOCALAPPDATA%\Track Kommander, written at run time.
+
+  UpgradeCode: the same as the earlier standalone Track Kommander's (scripts/wix), so installing
+  this replaces it; its ProductVersion therefore continues that scheme, 1.0.<days since
+  2020-01-01>: MajorUpgrade removes only a lower version. Never change the UpgradeCode.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+
+  <?ifndef Version ?>
+  <?define Version = 1.0.0 ?>
+  <?endif ?>
+
+  <Package
+    Name="Track Kommander"
+    Manufacturer="w0ts"
+    Version="$(Version)"
+    UpgradeCode="{78B3FD03-5F2C-4CAC-B61B-DD5A54DD6841}"
+    Scope="perMachine"
+    InstallerVersion="500">
+
+    <MajorUpgrade
+      Schedule="afterInstallInitialize"
+      AllowSameVersionUpgrades="yes"
+      DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(LicenseRtf)" />
+    <Property Id="INSTALLFOLDER" Secure="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(Icon)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <Property Id="ARPCOMMENTS" Value="Track Kommander, inside Traktor Pro 4." />
+
+    <!-- Traktor holds libtk.dll while it runs: it is closed first (asked), never killed. -->
+    <util:CloseApplication
+      Id="CloseTraktor"
+      Target="Traktor Pro 4.exe"
+      Description="Traktor must be closed before Track Kommander can be installed."
+      CloseMessage="yes"
+      ElevatedCloseMessage="yes"
+      RebootPrompt="no"
+      PromptToContinue="yes" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Track Kommander" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Feature Id="Complete" Title="Track Kommander" Level="1">
+      <ComponentGroupRef Id="Launcher" />
+      <ComponentGroupRef Id="Stage" />
+      <ComponentGroupRef Id="Shortcuts" />
+    </Feature>
+
+    <ComponentGroup Id="Launcher" Directory="INSTALLFOLDER">
+      <Component Id="LauncherComp">
+        <File Id="TkLaunch" Source="$(Stage)\tk_launch.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Everything else in the stage: libtk.dll, the kit, the add-on. -->
+    <ComponentGroup Id="Stage" Directory="INSTALLFOLDER">
+      <Files Include="$(Stage)\**\*">
+        <Exclude Files="$(Stage)\tk_launch.exe" />
+      </Files>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Shortcuts">
+      <Component Id="StartMenuComp" Directory="ProgramMenuFolder">
+        <Shortcut Id="StartMenuTK"
+                  Name="Traktor with Track Kommander"
+                  Description="Traktor Pro 4 with Track Kommander inside"
+                  Target="[INSTALLFOLDER]tk_launch.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\Track Kommander" Name="StartMenu"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="DesktopComp" Directory="DesktopFolder">
+        <Shortcut Id="DesktopTK"
+                  Name="Traktor with Track Kommander"
+                  Description="Traktor Pro 4 with Track Kommander inside"
+                  Target="[INSTALLFOLDER]tk_launch.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\Track Kommander" Name="Desktop"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Package>
+</Wix>

@@ -1,0 +1,5 @@
+# Shell scripts run under bash on Windows too (MSYS2, for the FFmpeg build):
+# a CRLF checkout breaks them. Batch files are the reverse — cmd.exe expects
+# CRLF.
+*.sh  text eol=lf
+*.bat text eol=crlf

@@ -1,0 +1,5 @@
+# Traktor builds this Track Kommander runs in (the installer reads this file).
+# One line per build: sha256 of the universal "Traktor Pro 4.app/Contents/MacOS/Traktor Pro 4",
+# sha256 of its arm64 slice, then the name shown to the user. Same hashes as the web builder's
+# traktor-native/builder/lib/builds.js; libtk's addresses are for exactly these builds.
+8a155de62bca89d2905e4aa7d1198b11540565437094dc71e529956f15a99294 53d2867080afff1a8438acbe2a27a3c1c33488f1fe18bb73e994dd1e7a2c499e Traktor Pro 4.5.1 (build 21)

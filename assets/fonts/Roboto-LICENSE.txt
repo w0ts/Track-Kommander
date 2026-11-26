@@ -1,0 +1,14 @@
+Roboto-Regular.ttf
+==================
+
+Roboto by Christian Robertson / Google.
+Licensed under the Apache License, Version 2.0.
+
+You may obtain a copy of the License at:
+    https://www.apache.org/licenses/LICENSE-2.0
+
+The full Apache-2.0 license text should accompany distributions of this font.
+Roboto is the typeface Traktor Pro itself bundles as a UI fallback; it is used
+here in the results browser to mirror Traktor's look with a freely
+redistributable face (NI's proprietary "Traktor"/Pragmatica face is not
+redistributable and is intentionally NOT bundled).
