@@ -33,6 +33,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -z "$ADDON" ] || [ -f "$ADDON/manifest.json" ] || { echo "not an add-on (no manifest.json): $ADDON" >&2; exit 1; }
+# Its folder may not exist yet (dist/ on a fresh checkout: hdiutil then fails, 2026-11-26).
+mkdir -p "$(dirname "$OUT_DMG")"
+OUT_DMG="$(cd "$(dirname "$OUT_DMG")" && pwd)/$(basename "$OUT_DMG")"
 LIBTK="$REPO/traktor-native/build/libtk.dylib"
 [ -f "$LIBTK" ] || { echo "no libtk: make libtk first" >&2; exit 1; }
 
