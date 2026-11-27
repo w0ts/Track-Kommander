@@ -1,7 +1,7 @@
 #!/bin/bash
-# Install Track Kommander. In Terminal (the surest way; a double-click works after macOS's
-# "Open Anyway"):
-#   bash "/Volumes/Track Kommander/Install Track Kommander.command"
+# Install Track Kommander. In Terminal (the disk image's "Install - copy this line into
+# Terminal.txt" holds the line; it lives in "Track Kommander Files", beside what it installs):
+#   bash "/Volumes/Track Kommander/Track Kommander Files/install.sh"
 #
 # Makes "Traktor Pro 4 TK.app" on this Mac, from YOUR Traktor Pro 4, and puts it beside it:
 #   - Traktor's executable, its Apple Silicon part only, told to load Track Kommander (libtk),
@@ -32,8 +32,7 @@ if [ "$(id -u)" -ne 0 ] && [ -z "$DRY" ]; then
   exec /usr/bin/sudo /bin/bash "$0" "$@"
 fi
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
-FILES="$DIR/Track Kommander Files"
+FILES="$(cd "$(dirname "$0")" && pwd)"  # "Track Kommander Files": this script's own folder
 SLIM="Traktor Pro 4 TK.app"
 TRAKTOR_NAME="Traktor Pro 4.app"
 EXE_REL="Contents/MacOS/Traktor Pro 4"
@@ -76,7 +75,7 @@ to_bin() {  # into the user's Bin, theirs again (never deleted)
   chown -R "$USER_NAME" "$target" 2>/dev/null || true
 }
 
-echo "Track Kommander — installing from $DIR"
+echo "Track Kommander — installing from $FILES"
 
 # ── What is in the disk image ─────────────────────────────────────────────────────────────────
 for f in tk/KIT-VERSION libtk.dylib crashpad_handler entitlements.plist macho_add_dylib.py supported-builds.txt; do

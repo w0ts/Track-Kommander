@@ -5,10 +5,11 @@ This disk image makes "Traktor Pro 4 TK": your own Traktor Pro 4, started with T
 Kommander inside it. It is made on your Mac, from your Traktor, and sits BESIDE your
 normal Traktor Pro 4, which is not changed: use either one.
 
-  Install Track Kommander.command   makes it and puts it in place (below)
+  Install - copy this line into Terminal.txt
+                                    the one line that installs it (below)
   Traktor Pro 4 folder              a shortcut to where it goes: beside your Traktor Pro 4,
                                     in /Applications/Native Instruments/Traktor Pro 4
-  Track Kommander Files             what the installer uses (Track Kommander itself,
+  Track Kommander Files             the installer and what it uses (Track Kommander itself,
                                     with its own Python: nothing else to install)
 
 Needs: an Apple Silicon Mac (M1 or later) and a Traktor Pro 4 version Track Kommander
@@ -22,11 +23,9 @@ version in Help > About). About 700 MB of disk space.
 Open "Install - copy this line into Terminal.txt" in this disk image, copy its line,
 paste it into Terminal (Applications > Utilities > Terminal) and press Return:
 
-    bash "/Volumes/Track Kommander/Install Track Kommander.command"
+    bash "/Volumes/Track Kommander/Track Kommander Files/install.sh"
 
-The installer runs in that Terminal window. (Double-clicking "Install Track Kommander.command"
-works only after System Settings > Privacy & Security > "Open Anyway", and not on every Mac:
-macOS refuses unsigned installers downloaded from the internet.)
+The installer runs in that Terminal window.
 
 It asks for your Mac password once, at the start, in Terminal (Traktor's folder is
 protected; nothing shows while you type it). If Traktor is running, it waits for you

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Build the Track Kommander disk image for the public release (macOS, Apple Silicon):
 #
-#   Install Track Kommander.command   dmg/: makes "Traktor Pro 4 TK.app" ON THE USER'S MAC from
+#   Install - copy this line into Terminal.txt   the one line that runs the installer (below)
+#   Track Kommander Files/install.sh  dmg/: makes "Traktor Pro 4 TK.app" ON THE USER'S MAC from
 #   READ ME.txt                       their own Traktor (no Native Instruments file in the image)
 #   Track Kommander Files/
 #     tk/                             the kit (make_kit.sh: Python, TK's packages and source,
@@ -59,16 +60,17 @@ if [ -n "$ADDON" ]; then
   rsync -a --exclude '__pycache__' --exclude '.DS_Store' "$ADDON/" "$FILES/tk-addon/"
 fi
 
-cp "$HERE/dmg/Install Track Kommander.command" "$HERE/dmg/READ ME.txt" "$STAGE/"
-chmod 755 "$STAGE/Install Track Kommander.command"
+cp "$HERE/dmg/READ ME.txt" "$STAGE/"
+# The installer sits with what it installs: a .command at the top was double-clicked, and macOS
+# refuses that from a downloaded image (User, 2026-11-27: "useless and misleading").
+cp "$HERE/dmg/install.sh" "$FILES/install.sh"
+chmod 755 "$FILES/install.sh"
 # The way in that macOS never blocks: a text file (no code, so no "Apple could not verify") with
-# the one line to paste into Terminal, spelt with this image's own volume name. Double-clicking
-# the .command from a downloaded image is refused, and Open Anyway did not get it to run
-# (User, 2026-11-26).
+# the one line to paste into Terminal, spelt with this image's own volume name (User, 2026-11-26).
 cat > "$STAGE/Install - copy this line into Terminal.txt" <<EOF
 To install Track Kommander, copy the line below, paste it into Terminal, press Return:
 
-bash "/Volumes/$VOLNAME/Install Track Kommander.command"
+bash "/Volumes/$VOLNAME/Track Kommander Files/install.sh"
 
 Terminal is in Applications > Utilities (or press Cmd+Space, type Terminal, press Return).
 It asks for your Mac password once (nothing shows while you type), then any question

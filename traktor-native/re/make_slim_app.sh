@@ -7,7 +7,7 @@
 #
 # Usage: make_slim_app.sh <out-dir>   (e.g. <repo>/worktrees/native-scratch/slim)
 # The DEVELOPMENT app: it runs TK from this checkout (tk-embed.conf names it). The release is made
-# on the user's Mac by re/dmg/Install Track Kommander.command (make_release_dmg.sh), with TK's kit
+# on the user's Mac by re/dmg/install.sh (make_release_dmg.sh), with TK's kit
 # inside the app.
 # TK_REPO_OVERRIDE points the build (its .venv, libtk and the installer generator) at another
 # TraktorKontrol checkout, so it can run from a worktree that has no .venv of its own.

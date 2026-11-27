@@ -101,13 +101,10 @@ each Traktor update needs a Track Kommander release made for it.
    (Applications → Utilities → Terminal) and press Return:
 
    ```
-   bash "/Volumes/Track Kommander/Install Track Kommander.command"
+   bash "/Volumes/Track Kommander/Track Kommander Files/install.sh"
    ```
 
-   The installer runs in that Terminal window. Double-clicking *Install Track
-   Kommander.command* instead works only after **System Settings → Privacy &
-   Security → Open Anyway**, and not on every Mac: macOS refuses unsigned
-   installers downloaded from the internet.
+   The installer runs in that Terminal window.
 3. **Type your Mac password** when Terminal asks (nothing shows while you type:
    Traktor's folder is protected). If Traktor is running, the installer waits
    for you to quit it. Questions come up in Terminal too — answer `y` or `n`.
